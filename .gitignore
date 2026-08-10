@@ -1,0 +1,11 @@
+node_modules/
+.env
+dist/
+.DS_Store
+
+# Downloaded Google service account key files (Google names these arbitrarily)
+*-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].json
+service-account*.json
+*service-account*.json
+*-key.json
+*credentials*.json

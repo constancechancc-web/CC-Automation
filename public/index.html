@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Property Leads</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --accent: #00A88E;
+    --accent-dark: #00876F;
+    --bg: #F5F7F7;
+    --card-bg: #FFFFFF;
+    --border: #E4E9E8;
+    --text: #1A2523;
+    --text-muted: #667470;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  header h1 { margin: 0 0 4px; font-size: 26px; font-weight: 700; }
+  header p { margin: 0; color: var(--text-muted); font-size: 14px; }
+  .header-actions { display: flex; gap: 10px; }
+
+  button {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px 18px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.primary:hover { background: var(--accent-dark); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .stat-card .label { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+  .stat-card .value { font-size: 28px; font-weight: 700; }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 220px;
+    max-width: 340px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--card-bg);
+  }
+  .search-box:focus { outline: none; border-color: var(--accent); }
+
+  .pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill-btn {
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-muted);
+  }
+  .pill-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .table-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th {
+    text-align: left;
+    padding: 12px 14px;
+    background: #FAFBFB;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    max-width: 220px;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFDFC; }
+  td.remark, td.requirement { white-space: pre-wrap; word-break: break-word; }
+
+  .status-select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 999px;
+    padding: 6px 28px 6px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='%23555' d='M6 8 0 0h12z'/%3E%3C/svg%3E");
+  }
+  .status-New\ Enquiry { background: #DCEBFE; color: #1D5FCC; }
+  .status-Following\ Up { background: #FDECC8; color: #9A6A00; }
+  .status-Viewing\ Arranged { background: #D3F3EC; color: #00786A; }
+  .status-Closed\ -\ Won { background: #DBF3DC; color: #1E7A29; }
+  .status-Closed\ -\ Lost { background: #E7E9E8; color: #5A6461; }
+
+  .empty-state {
+    text-align: center;
+    padding: 64px 24px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Property Leads</h1>
+      <p>Auto-filled from WhatsApp &middot; synced live</p>
+    </div>
+    <div class="header-actions">
+      <button id="exportBtn">Export</button>
+      <button id="addLeadBtn" class="primary">+ Add Lead</button>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="label">Total Leads</div>
+      <div class="value" id="statTotal">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">New Enquiries</div>
+      <div class="value" id="statNew">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Viewing Arranged</div>
+      <div class="value" id="statViewing">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Closed - Won</div>
+      <div class="value" id="statWon">0</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" id="searchBox" class="search-box" placeholder="Search by name or contact no..." />
+    <div class="pills" id="filterPills">
+      <button class="pill-btn active" data-filter="All">All</button>
+      <button class="pill-btn" data-filter="New Enquiry">New Enquiry</button>
+      <button class="pill-btn" data-filter="Following Up">Following Up</button>
+      <button class="pill-btn" data-filter="Viewing Arranged">Viewing Arranged</button>
+      <button class="pill-btn" data-filter="Closed">Closed</button>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table id="leadsTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Contact No</th>
+          <th>Name</th>
+          <th>Requirement</th>
+          <th>Budget</th>
+          <th>Remark</th>
+          <th>Source</th>
+          <th>Status</th>
+          <th>Last Follow Up</th>
+        </tr>
+      </thead>
+      <tbody id="leadsBody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none;">
+      No leads yet — they'll appear here once WhatsApp messages come in.
+    </div>
+  </div>
+</div>
+
+<script>
+  const STATUS_OPTIONS = ['New Enquiry', 'Following Up', 'Viewing Arranged', 'Closed - Won', 'Closed - Lost'];
+
+  let allLeads = [];
+  let currentFilter = 'All';
+  let currentSearch = '';
+
+  async function loadLeads() {
+    try {
+      const res = await fetch('/api/leads');
+      allLeads = await res.json();
+    } catch (err) {
+      console.error('Failed to load leads', err);
+      allLeads = [];
+    }
+    renderStats();
+    renderTable();
+  }
+
+  function renderStats() {
+    document.getElementById('statTotal').textContent = allLeads.length;
+    document.getElementById('statNew').textContent = allLeads.filter(l => l.status === 'New Enquiry').length;
+    document.getElementById('statViewing').textContent = allLeads.filter(l => l.status === 'Viewing Arranged').length;
+    document.getElementById('statWon').textContent = allLeads.filter(l => l.status === 'Closed - Won').length;
+  }
+
+  function matchesFilter(lead) {
+    if (currentFilter === 'All') return true;
+    if (currentFilter === 'Closed') return (lead.status || '').startsWith('Closed');
+    return lead.status === currentFilter;
+  }
+
+  function matchesSearch(lead) {
+    if (!currentSearch) return true;
+    const q = currentSearch.toLowerCase();
+    return (lead.name || '').toLowerCase().includes(q) || (lead.contactNo || '').toLowerCase().includes(q);
+  }
+
+  function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function statusClass(status) {
+    return 'status-' + String(status || '').replace(/ /g, '\\ ');
+  }
+
+  function renderTable() {
+    const filtered = allLeads.filter(l => matchesFilter(l) && matchesSearch(l));
+    const tbody = document.getElementById('leadsBody');
+    const emptyState = document.getElementById('emptyState');
+    const table = document.getElementById('leadsTable');
+
+    if (allLeads.length === 0) {
+      table.style.display = 'none';
+      emptyState.style.display = 'block';
+      tbody.innerHTML = '';
+      return;
+    }
+
+    table.style.display = '';
+    emptyState.style.display = 'none';
+
+    tbody.innerHTML = filtered.map(lead => {
+      const optionsHtml = STATUS_OPTIONS.map(opt =>
+        `<option value="${escapeHtml(opt)}" ${opt === lead.status ? 'selected' : ''}>${escapeHtml(opt)}</option>`
+      ).join('');
+      return `
+        <tr data-contact="${escapeHtml(lead.contactNo)}">
+          <td>${escapeHtml(lead.date)}</td>
+          <td>${escapeHtml(lead.contactNo)}</td>
+          <td>${escapeHtml(lead.name)}</td>
+          <td class="requirement">${escapeHtml(lead.requirement)}</td>
+          <td>${escapeHtml(lead.budget)}</td>
+          <td class="remark">${escapeHtml(lead.remark)}</td>
+          <td>${escapeHtml(lead.source)}</td>
+          <td>
+            <select class="status-select ${statusClass(lead.status)}" data-contact="${escapeHtml(lead.contactNo)}">
+              ${optionsHtml}
+            </select>
+          </td>
+          <td>${escapeHtml(lead.lastFollowUpDate)}</td>
+        </tr>
+      `;
+    }).join('');
+
+    tbody.querySelectorAll('.status-select').forEach(select => {
+      select.addEventListener('change', onStatusChange);
+    });
+  }
+
+  async function onStatusChange(e) {
+    const select = e.target;
+    const contactNo = select.dataset.contact;
+    const newStatus = select.value;
+
+    select.className = 'status-select ' + statusClass(newStatus);
+
+    try {
+      const res = await fetch(`/api/leads/${encodeURIComponent(contactNo)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!res.ok) throw new Error('Update failed');
+      const lead = allLeads.find(l => l.contactNo === contactNo);
+      if (lead) lead.status = newStatus;
+      renderStats();
+    } catch (err) {
+      console.error('Failed to update status', err);
+      alert('Could not update status. Please try again.');
+      loadLeads();
+    }
+  }
+
+  document.getElementById('searchBox').addEventListener('input', (e) => {
+    currentSearch = e.target.value;
+    renderTable();
+  });
+
+  document.getElementById('filterPills').addEventListener('click', (e) => {
+    const btn = e.target.closest('.pill-btn');
+    if (!btn) return;
+    document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderTable();
+  });
+
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    // no-op placeholder
+  });
+
+  document.getElementById('addLeadBtn').addEventListener('click', async () => {
+    const contactNo = window.prompt('Contact No (with country code):');
+    if (!contactNo) return;
+    const name = window.prompt('Name:') || '';
+    const requirement = window.prompt('Requirement (e.g. Rent condo in Bangsar):') || '';
+    const budget = window.prompt('Budget:') || 'Not specified';
+    const remark = window.prompt('Remark:') || '';
+    const source = window.prompt('Source:') || '';
+
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactNo, name, requirement, budget, remark, source }),
+      });
+      if (!res.ok) throw new Error('Add failed');
+      await loadLeads();
+    } catch (err) {
+      console.error('Failed to add lead', err);
+      alert('Could not add lead. Please try again.');
+    }
+  });
+
+  loadLeads();
+</script>
+</body>
+</html>
